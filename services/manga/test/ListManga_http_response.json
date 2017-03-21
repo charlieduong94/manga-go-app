@@ -1,0 +1,32 @@
+{
+  "manga": [
+    {
+      "i": "5166899845b9ef06ebc15ebc",
+      "t": "SHOKUGEKI NO SOMA",
+      "im": "54/54f8bc024abd72f103dcc9ecf93097a4b94d5d92466c9b22bafbbd32.png",
+      "a": "shokugeki-no-soma",
+      "s": 1,
+      "c": [
+        "Comedy",
+        "Drama",
+        "Shounen"
+      ],
+      "ld": 1489600777,
+      "h": 6850496
+    },
+    {
+      "i": "5171f48245b9efd44c7ba8a2",
+      "t": "the devil is a part timer",
+      "im": "99/9949c70030a89c9a2a1d5273a627de77ac2aaa948c961f1212c2ba46.jpg",
+      "a": "the-devil-is-a-part-time",
+      "s": 1,
+      "c": [
+        "Comedy",
+        "Drama",
+        "Shounen"
+      ],
+      "ld": 0,
+      "h": 0
+    }
+  ]
+}

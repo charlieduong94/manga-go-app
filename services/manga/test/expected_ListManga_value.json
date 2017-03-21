@@ -1,0 +1,32 @@
+{
+  "manga": [
+    {
+      "id": "5166899845b9ef06ebc15ebc",
+      "title": "SHOKUGEKI NO SOMA",
+      "image": "54/54f8bc024abd72f103dcc9ecf93097a4b94d5d92466c9b22bafbbd32.png",
+      "alias": "shokugeki-no-soma",
+      "status": 1,
+      "category": [
+        "Comedy",
+        "Drama",
+        "Shounen"
+      ],
+      "lastChapterDate": 1489600777,
+      "hits": 6850496
+    },
+    {
+      "id": "5171f48245b9efd44c7ba8a2",
+      "title": "the devil is a part timer",
+      "image": "99/9949c70030a89c9a2a1d5273a627de77ac2aaa948c961f1212c2ba46.jpg",
+      "aliaa": "the-devil-is-a-part-time",
+      "status": 1,
+      "category": [
+        "Comedy",
+        "Drama",
+        "Shounen"
+      ],
+      "lastChapterDate": 0,
+      "hits": 0
+    }
+  ]
+}
