@@ -42,20 +42,29 @@ func (collection *Collection) BatchPutItems (items []map[string]*dynamodb.Attrib
     writeRequests[i] = writeRequest
   }
 
-  tableWrites := map[string][]*dynamodb.WriteRequest{}
-  tableWrites[collection.TableName] = writeRequests
+  // batch puts
+  for i := 0; i < length; i += 24 {
+    var lastIndex int
+    if (i + 24 >= length) {
+      lastIndex = length
+    } else {
+      lastIndex = i + 24
+    }
 
-  batchWriteInput := &dynamodb.BatchWriteItemInput{
-    RequestItems: tableWrites,
+    batch := writeRequests[i:lastIndex]
+    tableWrites := map[string][]*dynamodb.WriteRequest{}
+    tableWrites[collection.TableName] = batch
+
+    batchWriteInput := &dynamodb.BatchWriteItemInput{
+      RequestItems: tableWrites,
+    }
+
+    _, err := client.BatchWriteItem(batchWriteInput)
+    if err != nil {
+      glog.Info("err", err)
+      continue
+    }
   }
-
-  output, err := client.BatchWriteItem(batchWriteInput)
-  if err != nil {
-    glog.Info("err", err)
-    return err
-  }
-
-  glog.Info("Output", *output)
 
   return nil
 }

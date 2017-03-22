@@ -83,6 +83,20 @@ func listManga () (models.MangaList, error) {
   return mangaList, nil
 }
 
+func (m MangaService) SyncManga () error {
+  mangaList, err := listManga()
+  if err != nil {
+    return err
+  }
+
+  err = m.collection.BatchPutItems(mangaList.Manga)
+  if err != nil {
+    return err
+  }
+
+  return nil
+}
+
 /*
 func GetLatestUpdates () models.MangaList {
 
