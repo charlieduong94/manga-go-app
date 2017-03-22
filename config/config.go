@@ -10,30 +10,37 @@ import (
 
 type Config struct {
   Env string `yaml:"env"`
-  DynamoDBEndpoint string `yaml:"dynamoDBEndpoint"`
+  DynamoDbEndpoint string `yaml:"dynamoDbEndpoint"`
 }
 
+var configLoaded = false
 var config Config
 var once sync.Once
 
-func GetConfig () Config {
+func Load (configFile string) {
   once.Do(func () {
     glog.Info("Loading config")
 
-    rawConfig, err := ioutil.ReadFile("config.yml")
+    rawConfig, err := ioutil.ReadFile(configFile)
 
     // TODO: handle errors properly and don't panic
     if err != nil {
-      panic(err)
-    }
-
-    err = yaml.Unmarshal(rawConfig, &config)
-    if err != nil {
-      panic(err)
+      glog.Info("Could not read config file..")
+    } else {
+      err = yaml.Unmarshal(rawConfig, &config)
+      if err != nil {
+        panic(err)
+      }
     }
 
     glog.Infof("Config: %+v", config)
+    configLoaded = true
   })
+}
 
+func GetConfig () Config {
+  if configLoaded == false {
+    panic("Config not loaded yet")
+  }
   return config
 }

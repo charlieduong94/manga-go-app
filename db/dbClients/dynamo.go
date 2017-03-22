@@ -8,7 +8,7 @@ import (
 )
 
 // creates an aws session and create a dynamo client from it
-func NewDynamoDBClient () *dynamodb.DynamoDB {
+func NewDynamoDbClient () *dynamodb.DynamoDB {
   awsSession := session.Must(session.NewSession())
 
   conf := config.GetConfig()
@@ -17,8 +17,9 @@ func NewDynamoDBClient () *dynamodb.DynamoDB {
     Region: aws.String("us-east-1"),
   }
 
-  if len(conf.DynamoDBEndpoint) != 0 {
-    awsConfig.Endpoint = aws.String("http://localhost:8000")
+  // set dynamo endpoint if specified in config
+  if len(conf.DynamoDbEndpoint) != 0 {
+    awsConfig.Endpoint = aws.String(conf.DynamoDbEndpoint)
   }
 
   return dynamodb.New(awsSession, awsConfig)

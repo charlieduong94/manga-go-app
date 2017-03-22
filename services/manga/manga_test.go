@@ -1,7 +1,7 @@
 package manga
 
 import (
-  "reflect"
+  "strings"
   "io/ioutil"
   "encoding/json"
   "testing"
@@ -47,11 +47,17 @@ func TestListManga (t *testing.T) {
   actualList, err := listManga()
   check(err, t)
 
-  // marshall objects into string for assertion
-  actualJson, _ := json.Marshal(actualList)
-  expectedJson, _ := json.Marshal(expectedList)
+  // marshal objects into string for assertion
+  actual, _ := json.Marshal(actualList)
+  expected, _ := json.Marshal(expectedList)
 
-  if (reflect.DeepEqual(actualJson, expectedJson)) {
+  actualJson := string(actual)
+  expectedJson := string(expected)
+
+  if strings.Compare(actualJson, expectedJson) != 0 {
+    t.Log("Actual and expected results are not equal")
+    t.Log("Actual:", actualJson)
+    t.Log("Expected:", expectedJson)
     t.Fail()
   }
 }
