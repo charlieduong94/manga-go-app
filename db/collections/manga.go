@@ -2,6 +2,7 @@ package collections
 
 import (
   "fmt"
+  "errors"
   "manga-app/models"
   "manga-app/db/collections/tableNames"
 
@@ -43,4 +44,26 @@ func (m MangaCollection) BatchPutItems (manga []models.Manga) error {
   }
 
   return m.Collection.BatchPutItems(items)
+}
+
+func (m MangaCollection) Query (queryInput *dynamodb.QueryInput) ([]models.Manga, error) {
+  items, err := m.Collection.Query(queryInput)
+  if err != nil {
+    return make([]models.Manga, 0), err
+  }
+
+  manga := make([]models.Manga, len(items))
+
+  for i, v := range items {
+    var item models.Manga
+
+    err := dynamodbattribute.ConvertFromMap(v, &item)
+    if err != nil {
+      return manga, errors.New("Problem converting data")
+    }
+
+    manga[i] = item
+  }
+
+  return manga, nil
 }

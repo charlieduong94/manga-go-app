@@ -4,6 +4,7 @@ import (
   "errors"
   "github.com/golang/glog"
   "manga-app/db/dbClients"
+  "github.com/aws/aws-sdk-go/aws"
   "github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
@@ -26,7 +27,7 @@ func initCollection (tableName string) (Collection, error) {
   return collection, nil
 }
 
-func (collection *Collection) BatchPutItems (items []map[string]*dynamodb.AttributeValue) error {
+func (collection Collection) BatchPutItems (items []map[string]*dynamodb.AttributeValue) error {
   client := collection.dbClient
   length := len(items)
   writeRequests := make([]*dynamodb.WriteRequest, length)
@@ -67,4 +68,15 @@ func (collection *Collection) BatchPutItems (items []map[string]*dynamodb.Attrib
   }
 
   return nil
+}
+
+func (collection Collection) Query (queryInput *dynamodb.QueryInput) ([]map[string]*dynamodb.AttributeValue, error) {
+  queryInput.TableName = aws.String(collection.TableName)
+
+  output, err := collection.dbClient.Query(queryInput)
+  if err != nil {
+    return output.Items, err
+  }
+
+  return output.Items, nil
 }

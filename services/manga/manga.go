@@ -12,6 +12,8 @@ import (
   "net/http"
   "encoding/json"
   "io/ioutil"
+  "github.com/aws/aws-sdk-go/aws"
+  "github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
 type MangaService struct {
@@ -67,6 +69,7 @@ func listManga () (models.MangaList, error) {
   for i := 0; i < length; i++ {
     curManga := preTransformedMangaList[i]
     manga[i] = models.Manga{
+      "english", // TODO: add support for others later
       curManga.Id,
       curManga.Title,
       curManga.Image,
@@ -97,10 +100,29 @@ func (m MangaService) SyncManga () error {
   return nil
 }
 
-/*
-func GetLatestUpdates () models.MangaList {
+func (m MangaService) GetLatestUpdates () ([]models.Manga, error) {
+  query := &dynamodb.QueryInput {
+    IndexName: aws.String("lastChapterIndex"),
+    Limit: aws.Int64(25),
+    KeyConditionExpression: aws.String("lang = :l and lastChapterDate > :i"),
+    ExpressionAttributeValues: map[string]*dynamodb.AttributeValue {
+      ":l": {
+        S: aws.String("english"),
+      },
+      ":i": {
+        N: aws.String("0"),
+      },
+    },
+  }
 
+  items, err := m.collection.Query(query)
+  if err != nil {
+    return make([]models.Manga, 0), err
+  }
+
+  return items, nil
 }
 
+/*
 func GetMostPopular () models.MangaList {
 */

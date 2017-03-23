@@ -11,5 +11,6 @@ func Run () {
   err := createMangaTable(client)
   if err != nil {
     glog.Error(err)
+    panic(err)
   }
 }

@@ -12,6 +12,7 @@ type MangaInput struct {
 }
 
 type Manga struct {
+  Language string `json:"lang"`
   Id string `json:"id"`
   Title string `json:"title"`
   Image string `json:"image"`
