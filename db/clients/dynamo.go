@@ -1,4 +1,4 @@
-package dbClients
+package clients
 
 import (
   "manga-app/config"

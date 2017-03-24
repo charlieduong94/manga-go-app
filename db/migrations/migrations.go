@@ -1,7 +1,7 @@
 package migrations
 
 import (
-  "manga-app/db/dbClients"
+  dbClients "manga-app/db/clients"
   "github.com/golang/glog"
 )
 

@@ -3,7 +3,7 @@ package collections
 import (
   "errors"
   "github.com/golang/glog"
-  "manga-app/db/dbClients"
+  dbClients "manga-app/db/clients"
   "github.com/aws/aws-sdk-go/aws"
   "github.com/aws/aws-sdk-go/service/dynamodb"
 )

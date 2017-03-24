@@ -27,9 +27,9 @@ type MangaService struct {
 }
 
 const LIST_URL = "https://www.mangaeden.com/api/list/0/"
+const PAGE_LIMIT = 25
 
 var instance *MangaService = nil
-
 var once sync.Once
 
 func GetInstance () *MangaService {
@@ -143,7 +143,7 @@ func (m MangaService) SyncManga () error {
 func (m MangaService) GetLatestUpdates (startKey string) (models.MangaList, error) {
   query := &dynamodb.QueryInput {
     IndexName: aws.String("lastChapterIndex"),
-    Limit: aws.Int64(25),
+    Limit: aws.Int64(PAGE_LIMIT),
     KeyConditionExpression: aws.String("lang = :l and lastChapterDate > :i"),
     ScanIndexForward: aws.Bool(false),
     ExpressionAttributeValues: map[string]*dynamodb.AttributeValue {

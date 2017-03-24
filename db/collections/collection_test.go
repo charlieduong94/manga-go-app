@@ -6,7 +6,7 @@ import (
   "testing"
   "manga-app/config"
   "manga-app/models"
-  "manga-app/db/dbClients"
+  dbClients "manga-app/db/clients"
   "manga-app/db/migrations"
   "manga-app/db/collections/tableNames"
 
