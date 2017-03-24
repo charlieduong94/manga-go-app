@@ -6,7 +6,13 @@ This is a simple server for providing manga data from MangaEden.
 
 ### Getting started
 
-Start up dependencies:
+Install dependencies:
+```bash
+go get -u github.com/golang/dep/...
+dep ensure -v
+```
+
+Start up docker:
 ```bash
 ./start-docker.sh
 ```

@@ -1,0 +1,25 @@
+{
+    "dependencies": {
+        "github.com/aws/aws-sdk-go": {
+            "branch": "master"
+        },
+        "github.com/golang/glog": {
+            "branch": "master"
+        },
+        "github.com/jarcoal/httpmock": {
+            "branch": "master"
+        },
+        "github.com/satori/go.uuid": {
+            "branch": "master"
+        },
+        "github.com/stretchr/testify": {
+            "branch": "master"
+        },
+        "gopkg.in/gin-gonic/gin.v1": {
+            "branch": "master"
+        },
+        "gopkg.in/yaml.v2": {
+            "branch": "v2"
+        }
+    }
+}
