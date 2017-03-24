@@ -18,7 +18,6 @@ func createTable (client *dynamodb.DynamoDB, createParams *dynamodb.CreateTableI
 
   _, err := client.CreateTable(createParams)
   if err != nil {
-    glog.Error(err)
     // check AND cast err if typeof awserr.Error
     if awsErr, ok := err.(awserr.Error); ok {
       // handle codes accordingly
@@ -26,10 +25,12 @@ func createTable (client *dynamodb.DynamoDB, createParams *dynamodb.CreateTableI
       if (code == "ResourceInUseException") {
         glog.Info("Table already created")
       } else {
+        glog.Error(err)
         return err
       }
     } else {
       // return the error that cannot be handled
+      glog.Error(err)
       return err
     }
   }

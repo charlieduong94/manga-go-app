@@ -70,13 +70,13 @@ func (collection Collection) BatchPutItems (items []map[string]*dynamodb.Attribu
   return nil
 }
 
-func (collection Collection) Query (queryInput *dynamodb.QueryInput) ([]map[string]*dynamodb.AttributeValue, error) {
+func (collection Collection) Query (queryInput *dynamodb.QueryInput) (*dynamodb.QueryOutput, error) {
   queryInput.TableName = aws.String(collection.TableName)
 
   output, err := collection.dbClient.Query(queryInput)
   if err != nil {
-    return output.Items, err
+    return output, err
   }
 
-  return output.Items, nil
+  return output, nil
 }

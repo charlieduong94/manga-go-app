@@ -9,7 +9,9 @@ import (
 // use service to handle calls
 func handleLatestUpdates (m *manga.MangaService) gin.HandlerFunc {
   return func (context *gin.Context) {
-    manga, err := m.GetLatestUpdates()
+    startKey := context.Query("startKey")
+
+    manga, err := m.GetLatestUpdates(startKey)
     if err != nil {
       glog.Error(err)
 

@@ -4,16 +4,22 @@
 package manga
 
 import (
-  "github.com/golang/glog"
+  "errors"
+  "encoding/base64"
+  "strings"
   "log"
   "sync"
-  "manga-app/db/collections"
-  "manga-app/models"
   "net/http"
   "encoding/json"
   "io/ioutil"
+
+  "manga-app/db/collections"
+  "manga-app/models"
+
+  "github.com/golang/glog"
   "github.com/aws/aws-sdk-go/aws"
   "github.com/aws/aws-sdk-go/service/dynamodb"
+  "github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
 type MangaService struct {
@@ -37,6 +43,40 @@ func GetInstance () *MangaService {
   })
 
   return instance
+}
+
+func encodeKey (key map[string]*dynamodb.AttributeValue) (string, error) {
+  keyMap := make(map[string]string)
+
+  err := dynamodbattribute.UnmarshalMap(key, &keyMap)
+  byteArray := []byte(keyMap["id"] + "|" + keyMap["lastChapterDate"] + "|" + keyMap["lang"])
+  if err != nil {
+    return "", err
+  }
+
+  return base64.StdEncoding.EncodeToString(byteArray), nil
+}
+
+func decodeKey (str string) (map[string]*dynamodb.AttributeValue, error) {
+  decodedMap := make(map[string]*dynamodb.AttributeValue)
+
+  decodedStr, err := base64.StdEncoding.DecodeString(str)
+  if err != nil {
+    return decodedMap, err
+  }
+
+  parts := strings.Split(string(decodedStr), "|")
+  if len(parts) != 3 {
+    return decodedMap, errors.New("Unable to decode last key")
+  }
+
+  glog.Info("parts", parts)
+
+  decodedMap["id"] = &dynamodb.AttributeValue{ S: aws.String(parts[0]) }
+  decodedMap["lastChapterDate"] = &dynamodb.AttributeValue{ N: aws.String(parts[1]) }
+  decodedMap["lang"] = &dynamodb.AttributeValue{ S: aws.String(parts[2]) }
+
+  return decodedMap, nil
 }
 
 func listManga () (models.MangaList, error) {
@@ -81,7 +121,7 @@ func listManga () (models.MangaList, error) {
     }
   }
 
-  mangaList = models.MangaList{manga}
+  mangaList.Manga = manga
 
   return mangaList, nil
 }
@@ -100,11 +140,12 @@ func (m MangaService) SyncManga () error {
   return nil
 }
 
-func (m MangaService) GetLatestUpdates () ([]models.Manga, error) {
+func (m MangaService) GetLatestUpdates (startKey string) (models.MangaList, error) {
   query := &dynamodb.QueryInput {
     IndexName: aws.String("lastChapterIndex"),
     Limit: aws.Int64(25),
     KeyConditionExpression: aws.String("lang = :l and lastChapterDate > :i"),
+    ScanIndexForward: aws.Bool(false),
     ExpressionAttributeValues: map[string]*dynamodb.AttributeValue {
       ":l": {
         S: aws.String("english"),
@@ -115,12 +156,46 @@ func (m MangaService) GetLatestUpdates () ([]models.Manga, error) {
     },
   }
 
-  items, err := m.collection.Query(query)
-  if err != nil {
-    return make([]models.Manga, 0), err
+  var mangaList models.MangaList
+
+  if len(startKey) > 0 {
+    newKey, err := decodeKey(startKey)
+    if err != nil {
+      return mangaList, errors.New("Invalid startKey provided")
+    }
+    glog.Info(newKey)
+    query.ExclusiveStartKey = newKey
   }
 
-  return items, nil
+
+  output, err := m.collection.Query(query)
+  items := output.Items
+  manga := make([]models.Manga, len(items))
+
+  for i, v := range items {
+    var item models.Manga
+
+    err := dynamodbattribute.ConvertFromMap(v, &item)
+    if err != nil {
+      return mangaList, errors.New("Problem converting data")
+    }
+
+    manga[i] = item
+  }
+
+  lastKey, err := encodeKey(output.LastEvaluatedKey)
+  if err != nil {
+    return mangaList, err
+  }
+
+  mangaList.Manga = manga
+  mangaList.LastKey = &lastKey
+
+  if err != nil {
+    return mangaList, err
+  }
+
+  return mangaList, nil
 }
 
 /*
